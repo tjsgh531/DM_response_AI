@@ -3,6 +3,8 @@ from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 import json
 import os
+import time
+import threading
 
 from app.webhook_handler import WebhookHandler
 from app.response_generator import ResponseGenerator
@@ -61,4 +63,12 @@ async def webhook(request: Request):
         print("❌ 처리 중 오류:", str(e))
         return JSONResponse(content={"error": "invalid message format"}, status_code=400)
 
+# ✅ 콘솔 확인용 토큰 출력
 print("🔐 VERIFY_TOKEN =", VERIFY_TOKEN)
+
+# ✅ Render에서 꺼지지 않도록 서버 유지용 쓰레드 추가
+def keep_alive():
+    while True:
+        time.sleep(60)
+
+threading.Thread(target=keep_alive).start()
