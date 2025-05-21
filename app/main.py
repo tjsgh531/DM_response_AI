@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
+
 import json
 import os
 import time
@@ -31,17 +32,20 @@ handler = create_handler()
 # ✅ Webhook 인증용 GET (Meta에서 요청)
 @app.get("/webhook")
 async def verify_webhook(request: Request):
+    print("🛠 verify_webhook 작동")
     mode = request.query_params.get("hub.mode")
     token = request.query_params.get("hub.verify_token")
     challenge = request.query_params.get("hub.challenge")
 
     if mode == "subscribe" and token == VERIFY_TOKEN:
         return int(challenge)
+    
     return JSONResponse(content={"error": "Invalid token"}, status_code=403)
 
 # ✅ DM 수신용 POST
 @app.post("/webhook")
 async def webhook(request: Request):
+    print("🛠 webhook Post 작동")
     data = await request.json()
 
     # 💥 전체 Raw JSON 데이터 출력
