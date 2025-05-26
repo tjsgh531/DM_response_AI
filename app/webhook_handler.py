@@ -3,5 +3,5 @@ class WebhookHandler:
         self.response_generator = response_generator
 
     def handle(self, message_text: str):
-        reply = self.response_generator.generate(message_text, customer)
+        reply = self.response_generator.generate(message_text)
         return reply
