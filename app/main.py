@@ -9,8 +9,7 @@ import threading
 
 from app.webhook_handler import WebhookHandler
 from app.response_generator import ResponseGenerator
-from app.customer_service import CustomerService
-from app.db import SessionLocal
+
 
 # 🔑 .env 로드
 load_dotenv()
@@ -22,10 +21,8 @@ VERIFY_TOKEN = os.getenv("VERIFY_TOKEN")
 
 # ✅ DI처럼 핸들러 인스턴스 구성
 def create_handler():
-    db = SessionLocal()
-    customer_service = CustomerService(db)
     response_generator = ResponseGenerator(os.getenv("OPENAI_API_KEY"))
-    return WebhookHandler(customer_service, response_generator)
+    return WebhookHandler(response_generator)
 
 handler = create_handler()
 
@@ -54,12 +51,10 @@ async def webhook(request: Request):
     try:
         change = data["entry"][0]["changes"][0]
         message_text = change["value"]["message"]["text"]
-        sender_id = change["value"]["sender"]["id"]
-
-        """
-        reply = handler.handle(message_text, sender_id)
+        # sender_id = change["value"]["sender"]["id"]
+        
+        reply = handler.handle(message_text)
         print("🤖 생성된 응답:", reply)
-        """
 
         return {"status": "done"}
 
