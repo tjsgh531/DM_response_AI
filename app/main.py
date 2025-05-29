@@ -10,6 +10,11 @@ import threading
 from app.webhook_handler import WebhookHandler
 from app.response_generator import ResponseGenerator
 
+from app.webhook_handler import router as webhook_router
+
+app.include_router(webhook_router)
+
+
 
 # 🔑 .env 로드
 load_dotenv()
