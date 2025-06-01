@@ -1,32 +1,43 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from dotenv import load_dotenv
-
 import json
 import os
 import time
 import threading
+import requests
 
 from app.webhook_handler import WebhookHandler
 from app.response_generator import ResponseGenerator
-
 
 # 🔑 .env 로드
 load_dotenv()
 
 app = FastAPI()
 
-# ✅ 인증 토큰 환경변수에서 불러오기
 VERIFY_TOKEN = os.getenv("VERIFY_TOKEN")
+PAGE_ACCESS_TOKEN = os.getenv("PAGE_ACCESS_TOKEN")
 
-# ✅ DI처럼 핸들러 인스턴스 구성
+# ✅ 응답 전송 함수
+def send_dm(recipient_id: str, text: str):
+    url = f"https://graph.facebook.com/v18.0/me/messages?access_token={PAGE_ACCESS_TOKEN}"
+    payload = {
+        "messaging_type": "RESPONSE",
+        "recipient": {"id": recipient_id},
+        "message": {"text": text}
+    }
+    response = requests.post(url, json=payload)
+    print("📤 DM 전송 결과:", response.status_code, response.text)
+    return response
+
+# ✅ 응답 생성 핸들러 구성
 def create_handler():
     response_generator = ResponseGenerator(os.getenv("OPENAI_API_KEY"))
     return WebhookHandler(response_generator)
 
 handler = create_handler()
 
-# ✅ Webhook 인증용 GET (Meta에서 요청)
+# ✅ Webhook 인증용 GET
 @app.get("/webhook")
 async def verify_webhook(request: Request):
     print("🛠 verify_webhook 작동")
@@ -35,8 +46,7 @@ async def verify_webhook(request: Request):
     challenge = request.query_params.get("hub.challenge")
 
     if mode == "subscribe" and token == VERIFY_TOKEN:
-        return int(challenge)
-    
+        return Response(content=challenge, media_type="text/plain")
     return JSONResponse(content={"error": "Invalid token"}, status_code=403)
 
 # ✅ DM 수신용 POST
@@ -44,17 +54,19 @@ async def verify_webhook(request: Request):
 async def webhook(request: Request):
     print("🛠 webhook Post 작동")
     data = await request.json()
-
-    # 💥 전체 Raw JSON 데이터 출력
     print("📨 Raw JSON 수신:\n", json.dumps(data, indent=2))
 
     try:
-        change = data["entry"][0]["changes"][0]
-        message_text = change["value"]["message"]["text"]
-        # sender_id = change["value"]["sender"]["id"]
-        
+        messaging_event = data["entry"][0]["messaging"][0]
+        message_text = messaging_event["message"]["text"]
+        sender_id = messaging_event["sender"]["id"]
+
+        # 🤖 응답 생성
         reply = handler.handle(message_text)
         print("🤖 생성된 응답:", reply)
+
+        # 📤 응답 전송
+        send_dm(sender_id, reply)
 
         return {"status": "done"}
 
@@ -62,10 +74,11 @@ async def webhook(request: Request):
         print("❌ 처리 중 오류:", str(e))
         return JSONResponse(content={"error": "invalid message format"}, status_code=400)
 
-# ✅ 콘솔 확인용 토큰 출력
+# ✅ 콘솔 확인용
 print("🔐 VERIFY_TOKEN =", VERIFY_TOKEN)
+print("🔐 PAGE_ACCESS_TOKEN =", PAGE_ACCESS_TOKEN)
 
-# ✅ Render에서 꺼지지 않도록 서버 유지용 쓰레드 추가
+# ✅ 서버 유지를 위한 더미 쓰레드
 def keep_alive():
     while True:
         time.sleep(60)
