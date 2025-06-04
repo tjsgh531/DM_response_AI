@@ -7,6 +7,8 @@ PAGE_ACCESS_TOKEN = os.getenv("PAGE_ACCESS_TOKEN")
 
 class DMResponser:
     def handle(self, change):
+        print("📌 DM Responser가 전달 받은 데이터")
+        print(change)
         try:
             sender_id = change["value"]["sender"]["id"]
             text = change["message"]["text"]
