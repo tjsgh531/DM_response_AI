@@ -40,8 +40,13 @@ async def webhook(request: Request):
     print("📨 Webhook 수신:\n", json.dumps(data, indent=2))
 
     try:
+        print("✅ try 시작!")
         for entry in data.get("entry", []):
+            print("📦 entry 내용")
+            print(entry)
             for change in entry.get("changes", []):
+                print("📦 change 내용")
+                print(change)
                 field = change.get("field")
                 id = entry["id"]
 
