@@ -6,8 +6,8 @@ import time
 import threading
 from dotenv import load_dotenv
 
-from dm_responser import DMResponser
-from reels_responser import ReelsResponser
+from app.dm_responser import DMResponser
+from app.reels_responser import ReelsResponser
 
 # 환경 변수 로드
 load_dotenv()
