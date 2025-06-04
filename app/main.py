@@ -23,6 +23,8 @@ reels_responser = ReelsResponser()
 # Webhook 인증용 GET
 @app.get("/webhook")
 async def verify_webhook(request: Request):
+    print("🛠 Webhook 인증 Get 수신")
+
     mode = request.query_params.get("hub.mode")
     token = request.query_params.get("hub.verify_token")
     challenge = request.query_params.get("hub.challenge")
@@ -44,10 +46,12 @@ async def webhook(request: Request):
 
                 # DM 처리
                 if field == "messages":
+                    print("✉️ DM 보내기 시작")
                     dm_responser.handle(entry)
 
                 # 릴스 처리
                 elif field == "comments":
+                    print("🥕 답글 달기 시작!")
                     reels_responser.handle(change)
 
         return {"status": "ok"}
