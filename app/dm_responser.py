@@ -10,8 +10,9 @@ class DMResponser:
         print("📌 DM Responser가 전달 받은 데이터")
         print(change)
         try:
-            sender_id = change["value"]["sender"]["id"]
-            text = change["message"]["text"]
+            value = change["value"]
+            sender_id = value["sender"]["id"]
+            text = value["message"]["text"]
 
             print(f"📩 DM 수신: {text} (From: {sender_id})")
             reply = self.generate_reply(text)
