@@ -6,13 +6,12 @@ load_dotenv()
 PAGE_ACCESS_TOKEN = os.getenv("PAGE_ACCESS_TOKEN")
 
 class DMResponser:
-    def handle(self, change, ig_business_id: str):
+    def handle(self, message, ig_business_id: str):
         print("📌 DM Responser가 전달 받은 데이터")
-        print(change)
+        
         try:
-            value = change["value"]
-            sender_id = value["sender"]["id"]
-            text = value["message"]["text"]
+            sender_id = message["sender"]["id"]
+            text = message["message"]["text"]
 
             print(f"📩 DM 수신: {text} (From: {sender_id})")
             reply = self.generate_reply(text)

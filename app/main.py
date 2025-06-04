@@ -44,21 +44,21 @@ async def webhook(request: Request):
         for entry in data.get("entry", []):
             print("📦 entry 내용")
             print(entry)
-            for change in entry.get("changes", []):
-                print("📦 change 내용")
-                print(change)
-                field = change.get("field")
+            for message in entry.get("messaging", []):
+                print("📦 message 내용")
+                print(message)
+                
                 id = entry["id"]
-
                 # DM 처리
-                if field == "messages":
-                    print("✉️ DM 보내기 시작")
-                    dm_responser.handle(change, id)
-
+                print("✉️ DM 보내기 시작")
+                dm_responser.handle(message, id)
+                
+                """
                 # 릴스 처리
                 elif field == "comments":
                     print("🥕 답글 달기 시작!")
                     reels_responser.handle(change)
+                """
 
         return {"status": "ok"}
 
