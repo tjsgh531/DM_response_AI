@@ -48,10 +48,9 @@ async def webhook(request: Request):
                 print("📦 message 내용")
                 print(message)
                 
-                id = entry["id"]
                 # DM 처리
                 print("✉️ DM 보내기 시작")
-                dm_responser.handle(message, id)
+                dm_responser.handle(message)
                 
                 """
                 # 릴스 처리
