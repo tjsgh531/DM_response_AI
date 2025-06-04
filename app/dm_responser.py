@@ -6,11 +6,10 @@ load_dotenv()
 PAGE_ACCESS_TOKEN = os.getenv("PAGE_ACCESS_TOKEN")
 
 class DMResponser:
-    def handle(self, entry):
+    def handle(self, change):
         try:
-            event = entry["messaging"][0]
-            sender_id = event["sender"]["id"]
-            text = event["message"]["text"]
+            sender_id = change["value"]["sender"]["id"]
+            text = change["message"]["text"]
 
             print(f"📩 DM 수신: {text} (From: {sender_id})")
             reply = self.generate_reply(text)

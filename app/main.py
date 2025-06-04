@@ -47,7 +47,7 @@ async def webhook(request: Request):
                 # DM 처리
                 if field == "messages":
                     print("✉️ DM 보내기 시작")
-                    dm_responser.handle(entry)
+                    dm_responser.handle(change)
 
                 # 릴스 처리
                 elif field == "comments":
