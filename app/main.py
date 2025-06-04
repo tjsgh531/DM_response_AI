@@ -43,11 +43,12 @@ async def webhook(request: Request):
         for entry in data.get("entry", []):
             for change in entry.get("changes", []):
                 field = change.get("field")
+                id = entry["id"]
 
                 # DM 처리
                 if field == "messages":
                     print("✉️ DM 보내기 시작")
-                    dm_responser.handle(change)
+                    dm_responser.handle(change, id)
 
                 # 릴스 처리
                 elif field == "comments":
