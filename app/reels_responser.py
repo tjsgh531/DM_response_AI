@@ -11,6 +11,14 @@ class ReelsResponser:
             value = change.get("value", {})
             comment_id = value.get("id")
             text = value.get("text")
+            sender = value.get("from", {})
+            sender_id = sender.get("id")
+
+            # 내 페이지 또는 Instagram 계정 ID라면 무시
+            MY_INSTAGRAM_USER_ID = os.getenv("MY_INSTAGRAM_USER_ID")
+            if sender_id == MY_INSTAGRAM_USER_ID:
+                print("🔁 내가 단 댓글입니다. 무시합니다.")
+                return
 
             print(f"💬 댓글 수신: {text} (ID: {comment_id})")
             if comment_id and text:
