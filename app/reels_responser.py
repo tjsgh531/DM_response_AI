@@ -32,9 +32,11 @@ class ReelsResponser:
             print("❌ 댓글 처리 오류:", str(e))
 
     def already_replied(self, comment_id: str) -> bool:
-        url = f"https://graph.facebook.com/v18.0/{comment_id}/comments?access_token={PAGE_ACCESS_TOKEN}"
+        # ✅ 대댓글(replies) 기준으로 확인
+        url = f"https://graph.facebook.com/v18.0/{comment_id}/replies?access_token={PAGE_ACCESS_TOKEN}"
         response = requests.get(url)
         if response.status_code != 200:
+            print("❗ 댓글 응답 목록 조회 실패:", response.status_code, response.text)
             return False
         data = response.json().get("data", [])
         for item in data:
