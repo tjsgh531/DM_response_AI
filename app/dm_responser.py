@@ -7,18 +7,28 @@ PAGE_ACCESS_TOKEN = os.getenv("PAGE_ACCESS_TOKEN")
 
 class DMResponser:
     def handle(self, message):
-        print("📌 DM Responser가 전달 받은 데이터")
-        print(message)
         try:
-            sender_id = message["sender"]["id"]
-            text = message["message"]["text"]
+            if "read" in message:
+                print("👁️ 읽음 이벤트입니다. 응답하지 않습니다.")
+                return
 
-            print(f"📩 DM 수신: {text} (From: {sender_id})")
-            reply = self.generate_reply(text)
-            self.send_dm(sender_id, reply)
+            if message.get("message", {}).get("is_echo"):
+                print("🔁 Echo 메시지입니다. 응답하지 않습니다.")
+                return
+
+            if "message" in message and "text" in message["message"]:
+                sender_id = message["sender"]["id"]
+                text = message["message"]["text"]
+                print(f"📩 DM 수신: {text} (From: {sender_id})")
+                reply = self.generate_reply(text)
+                self.send_dm(sender_id, reply)
+                return
+
+            print("⚠️ 처리 대상이 아닌 메시지입니다.")
 
         except Exception as e:
             print("❌ DM 처리 오류:", str(e))
+
 
     # 메세지 응답 생성 함수
     def generate_reply(self, message: str) -> str:

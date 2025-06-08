@@ -40,16 +40,9 @@ async def webhook(request: Request):
     print("📨 Webhook 수신:\n", json.dumps(data, indent=2))
 
     try:
-        print("✅ try 시작!")
         for entry in data.get("entry", []):
-            print("📦 entry 내용")
-            print(entry)
             for message in entry.get("messaging", []):
-                print("📦 message 내용")
-                print(message)
-                
                 # DM 처리
-                print("✉️ DM 보내기 시작")
                 dm_responser.handle(message)
                 
                 """
