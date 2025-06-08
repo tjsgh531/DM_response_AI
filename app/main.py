@@ -41,16 +41,17 @@ async def webhook(request: Request):
 
     try:
         for entry in data.get("entry", []):
+            # 🔹 릴스/게시글 댓글 이벤트 처리
+            if "changes" in entry:
+                for change in entry["changes"]:
+                    field = change.get("field")
+                    if field == "comments":
+                        print("💬 릴스/게시글 댓글 수신!")
+                        reels_responser.handle(change)
+
+            # 🔹 DM 이벤트 처리
             for message in entry.get("messaging", []):
-                # DM 처리
                 dm_responser.handle(message)
-                
-                """
-                # 릴스 처리
-                elif field == "comments":
-                    print("🥕 답글 달기 시작!")
-                    reels_responser.handle(change)
-                """
 
         return {"status": "ok"}
 
