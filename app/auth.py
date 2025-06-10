@@ -22,3 +22,25 @@ def authorize():
         "prompt": "consent"
     })
     return {"url": f"https://accounts.google.com/o/oauth2/v2/auth?{query}"}
+
+@router.get("/oauth2callback")
+def oauth2callback(request: Request):
+    code = request.query_params.get("code")
+    if not code:
+        return {"error": "Missing code parameter"}
+
+    token_url = "https://oauth2.googleapis.com/token"
+    data = {
+        "code": code,
+        "client_id": GOOGLE_CLIENT_ID,
+        "client_secret": GOOGLE_CLIENT_SECRET,
+        "redirect_uri": REDIRECT_URI,
+        "grant_type": "authorization_code"
+    }
+
+    response = requests.post(token_url, data=data)
+    if response.status_code != 200:
+        return {"error": "Failed to get token", "details": response.text}
+
+    token_info = response.json()
+    return {"token": token_info}
