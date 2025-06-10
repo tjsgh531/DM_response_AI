@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 from app.dm_responser import DMResponser
 from app.reels_responser import ReelsResponser
+from app import auth
 
 # 환경 변수 로드
 load_dotenv()
@@ -15,6 +16,7 @@ VERIFY_TOKEN = os.getenv("VERIFY_TOKEN")
 
 # FastAPI 앱 생성
 app = FastAPI()
+app.include_router(auth.router) # Google aouth
 
 # 응답 핸들러 인스턴스
 dm_responser = DMResponser()
