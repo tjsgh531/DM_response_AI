@@ -50,8 +50,9 @@ async def webhook(request: Request):
                         reels_responser.handle(change)
 
             # 🔹 DM 이벤트 처리
-            for message in entry.get("messaging", []):
-                dm_responser.handle(message)
+            elif "messaging" in entry:
+                for message in entry.get("messaging", []):
+                    dm_responser.handle(message)
 
         return {"status": "ok"}
 
