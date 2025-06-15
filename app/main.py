@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 from app.dm_responser import DMResponser
 from app.reels_responser import ReelsResponser
+from app.notion_calendar import NotionCalendarClient
 
 # 환경 변수 로드
 load_dotenv()
@@ -66,3 +67,17 @@ def keep_alive():
         time.sleep(60)
 
 threading.Thread(target=keep_alive, daemon=True).start()
+
+"""
+if __name__ == "__main__":
+    notion = NotionCalendarClient()
+
+    notion.create_reservation(
+        name="김예림",
+        contact="010-1234-5678",
+        start="2025-06-20T10:00:00+09:00",
+        end="2025-06-20T11:00:00+09:00",
+        memo="오전 10시 아트 예약입니다 💅"
+    )
+
+"""
